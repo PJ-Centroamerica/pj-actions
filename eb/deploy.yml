@@ -1,0 +1,54 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      application:
+        description: 'Application name'
+        required: true    
+      environment:
+        description: 'Environment deployment'
+        required: true
+        default: 'development'
+      aws-access-key-id:
+        description: 'AWS access ID'
+        required: true
+      aws-secret-access-key:
+        description: 'AWS access secret key'
+        required: true
+      aws-region:
+        description: 'AWS region'
+        required: true
+        default: us-east-1
+      icon:
+        description: 'Country icon'
+        required: true
+
+jobs:
+
+  deploy:
+    name: Deploy to AWS Elastic Beanstalk
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: ${{ inputs.aws-region }}
+
+    - name: Checkout Code
+        uses: actions/checkout@v3
+
+    - name: Deploy EB
+      run: |
+        echo "--- Installing EB CLI ---"
+        python -m pip install --upgrade pip
+        pip install awsebcli --upgrade
+        eb --version
+        echo "--- Start EB deploy ---"
+        eb init --region ${{ inputs.aws-region }}
+        eb use ${{ inputs.application }}-${{ inputs.environment }}
+        eb deploy
