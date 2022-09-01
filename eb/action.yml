@@ -4,11 +4,7 @@ description: 'Elastic Beanstalk workflow deployment'
 inputs:
   application:
     description: 'Application name'
-    required: true
-  country:
-    description: 'Country deployment'
-    required: true
-    default: 'chile'
+    required: true    
   environment:
     description: 'Environment deployment'
     required: true
@@ -28,18 +24,29 @@ inputs:
     required: true
 
 
+
 runs:
   using: "composite"
-  steps:
+    steps:
 
-    - name: 🇨🇱 Deployment Chile 🇨🇱
-      if: inputs.country == 'chile'
-      uses: Drakefsi/pj-actions/eb/deploy.yml@master
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-        application: ${{ inputs.application }}
-        environment: ${{ inputs.environment }}
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
         aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
         aws-region: ${{ inputs.aws-region }}
 
+    - name: Checkout Code
+        uses: actions/checkout@v3
+
+    - name: Deploy EB
+      run: |
+        echo "--- Installing EB CLI ---"
+        python -m pip install --upgrade pip
+        pip install awsebcli --upgrade
+        eb --version
+        echo "--- Start EB deploy ---"
+        eb init --region ${{ inputs.aws-region }}
+        eb use ${{ inputs.application }}-${{ inputs.environment }}
+        eb deploy
     
