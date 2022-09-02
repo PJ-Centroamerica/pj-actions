@@ -46,6 +46,7 @@ runs:
       run: |
         echo "--- Installing EB CLI ---"
         sudo pip config --global set global.index-url http://nexus.nexus.svc.local:8081/repository/pip-proxy/simple/
+        sudo pip config --global set global.trusted-host nexus.nexus.svc.local
         python -m pip install --upgrade pip
         pip install awsebcli --upgrade
         eb --version
