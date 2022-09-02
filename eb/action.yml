@@ -47,6 +47,7 @@ runs:
         pip install awsebcli --upgrade
         eb --version
         echo "--- Deploy ---"
+        eb use ${{ inputs.application }}-${{ inputs.environment }}
         eb deploy ${{ inputs.application }}-${{ inputs.environment }}
       env:
         DEBIAN_FRONTEND: noninteractive
