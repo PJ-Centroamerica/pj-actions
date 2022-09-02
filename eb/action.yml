@@ -40,6 +40,7 @@ runs:
       uses: actions/checkout@v3
 
     - name: Deploy EB
+      shell: bash
       run: |
         echo "--- Installing EB CLI ---"
         python -m pip install --upgrade pip
