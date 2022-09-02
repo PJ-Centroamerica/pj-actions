@@ -41,16 +41,19 @@ runs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Deploy EB
+
+    - name: Install eb-cli
       shell: bash
       run: |
-        echo "--- Installing EB CLI ---"
         sudo pip config --global set global.index-url http://nexus.nexus.svc.local:8081/repository/pip-proxy/simple/
         sudo pip config --global set global.trusted-host nexus.nexus.svc.local
         python -m pip install --upgrade pip
         pip install awsebcli --upgrade
+
+    - name: Deploy EB
+      shell: bash
+      run: |
         eb --version
-        echo "--- Deploy ---"
         eb init ${{ inputs.application }} --region ${{ inputs.aws-region }} --platform "${{ inputs.plataform }}"
         eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process
 
