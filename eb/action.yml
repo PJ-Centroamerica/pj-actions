@@ -50,4 +50,6 @@ runs:
         eb init --region ${{ inputs.aws-region }} ${{ inputs.application }} -v
         echo "--- Deploy ---"
         eb deploy ${{ inputs.application }}-${{ inputs.environment }}
+      env:
+        DEBIAN_FRONTEND: noninteractive
     
