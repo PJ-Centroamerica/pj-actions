@@ -47,7 +47,7 @@ runs:
         pip install awsebcli --upgrade
         eb --version
         echo "--- Init ---"
-        eb init ${{ inputs.application }} --region ${{ inputs.aws-region }}
+        eb init --region ${{ inputs.aws-region }} ${{ inputs.application }} -v
         echo "--- Deploy ---"
         eb deploy ${{ inputs.application }}-${{ inputs.environment }}
     
