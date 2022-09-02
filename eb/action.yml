@@ -41,7 +41,6 @@ runs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-
     - name: Install eb-cli
       shell: bash
       run: |
