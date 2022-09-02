@@ -48,6 +48,6 @@ runs:
         eb --version
         echo "--- Start EB deploy ---"
         eb init ${{ inputs.application }} --region ${{ inputs.aws-region }}
-        eb use ${{ inputs.environment }}
+        eb use ${{ inputs.application }}-${{ inputs.environment }}
         eb deploy
     
