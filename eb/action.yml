@@ -22,7 +22,9 @@ inputs:
   icon:
     description: 'Country icon'
     required: true
-
+  plataform:
+    description: 'Environment plataform'
+    requied: true
 
 
 runs:
@@ -47,7 +49,6 @@ runs:
         pip install awsebcli --upgrade
         eb --version
         echo "--- Deploy ---"
-        eb init ${{ inputs.application }} --region ${{ inputs.aws-region }} --platform "${{ env.PLATAFORM }}"
+        eb init ${{ inputs.application }} --region ${{ inputs.aws-region }} --platform "${{ inputs.plataform }}"
         eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process
-      env:
-        PLATAFORM: 'Ruby 2.7 running on 64bit Amazon Linux 2'
+
