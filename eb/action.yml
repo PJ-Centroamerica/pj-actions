@@ -47,8 +47,8 @@ runs:
         pip install awsebcli --upgrade
         eb --version
         echo "--- Deploy ---"
-        eb use ${{ inputs.application }}-${{ inputs.environment }}
+        eb init ${{ inputs.application }} --region ${{ inputs.aws-region }} --plataform ${{ env.PLATAFORM }}
         eb deploy ${{ inputs.application }}-${{ inputs.environment }}
       env:
-        DEBIAN_FRONTEND: noninteractive
+        PLATAFORM: 'Ruby 2.7 running on 64bit Amazon Linux 2'
     
