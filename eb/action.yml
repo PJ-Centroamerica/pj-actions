@@ -48,6 +48,6 @@ runs:
         eb --version
         echo "--- Deploy ---"
         eb init ${{ inputs.application }} --region ${{ inputs.aws-region }} --platform "${{ env.PLATAFORM }}"
-        eb deploy ${{ inputs.application }}-${{ inputs.environment }}
+        eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process
       env:
         PLATAFORM: 'Ruby 2.7 running on 64bit Amazon Linux 2'
