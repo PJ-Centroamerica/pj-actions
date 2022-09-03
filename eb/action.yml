@@ -25,34 +25,75 @@ inputs:
   plataform:
     description: 'Environment plataform'
     requied: true
-
+  branch-release:
+    description: 'Branch or release to deploy'
+    required: true
+  slack-bot-token:
+    description: 'Slack token'
+    required: true
+  slack-channel:
+    description: 'Slack channel'
+    required: true
 
 runs:
     using: "composite"
     steps:
 
-    - name: Configure AWS Credentials
+    - name: 🚀 Slack status
+      if: always()
+      id: slack
+      uses: slackapi/slack-github-action@v1.21.0
+      with:
+        channel-id: ${{ inputs.slack-channel }}
+        slack-message: '*Deployment:* ${{ inputs.application }} *Environment:* ${{ inputs.environment }} *Country:* ${{ inputs.icon }} *branch/release:* ${{ inputs.branch-release }} *Status:* started! ⚠️'
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+
+    - name: 🌧️ Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
         aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
         aws-region: ${{ inputs.aws-region }}
 
-    - name: Checkout Code
+    - name: ✨ Checkout Code
       uses: actions/checkout@v3
 
-    - name: Install eb-cli
+    - name: 🧰 Install eb-cli
       shell: bash
       run: |
-        sudo pip config --global set global.index-url http://nexus.nexus.svc.local:8081/repository/pip-proxy/simple/
-        sudo pip config --global set global.trusted-host nexus.nexus.svc.local
+        sudo pip config --global set global.index-url http://${PROXY_DOMAIN}:${PROXY_PORT}${PROXY_PATH}
+        sudo pip config --global set global.trusted-host ${PROXY_DOMAIN}
         python -m pip install --upgrade pip
         pip install awsebcli --upgrade
+      env:
+        PROXY_DOMAIN: nexus.nexus.svc.local
+        PROXY_PORT: 8081
+        PROXY_PATH: /repository/pip-proxy/simple/
 
-    - name: Deploy EB
+    - name: 🛸 Deploy Elastic Beanstalk
       shell: bash
       run: |
         eb --version
         eb init ${{ inputs.application }} --region ${{ inputs.aws-region }} --platform "${{ inputs.plataform }}"
         eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process
 
+    - name: 🚀 Slack success ✅
+      if: success()
+      uses: slackapi/slack-github-action@v1.21.0
+      with:
+        channel-id: ${{ inputs.slack-channel }}
+        slack-message: '*Deployment:* ${{ inputs.application }} *Environment:* ${{ inputs.environment }} *Country:* ${{ inputs.icon }} *branch/release:* ${{ inputs.branch-release }} *Status:* succeeded! ✅'
+        update-ts: ${{ steps.slack.outputs.ts }}
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+
+    - name: 🚀 Slack failure ❌
+      if: failure()
+      uses: slackapi/slack-github-action@v1.21.0
+      with:
+        channel-id: ${{ inputs.slack-channel }}
+        slack-message: '*Deployment:* ${{ inputs.application }} *Environment:* ${{ inputs.environment }} *Country:* ${{ inputs.icon }} *branch/release:* ${{ inputs.branch-release }} *Status:* failed! ❌'
+        update-ts: ${{ steps.slack.outputs.ts }}
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
