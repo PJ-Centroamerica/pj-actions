@@ -47,22 +47,21 @@ runs:
         channel-id: ${{ inputs.slack-channel }}
         payload: |
           {
-            "text": "Deployment started (In Progress)",
-            "attachments": [
-              {
-                "pretext": "Deployment started",
-                "color": "dbab09",
-                "fields": [
-                  {
-                    "title": "Status",
-                    "short": true,
-                    "value": "In Progress"
-                  }
-                ]
-              }
-            ]
+             "attachments":[
+                {
+                   "mrkdwn_in": ["text"],
+                   "color":"",
+                   "text":"${{ inputs.icon }} *Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} ${{ inputs.icon }}",
+                   "fields":[
+                      {
+                         "title": "Status",
+                         "short":true,
+                         "value":"_In Progress_"
+                      }
+                   ]
+                }
+             ]
           }
-        #slack-message: '*Deployment:* ${{ inputs.application }} *Environment:* ${{ inputs.environment }} *Country:* ${{ inputs.icon }} *branch/release:* ${{ inputs.branch-release }} *Status:* started! ⚠️'
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
 
@@ -102,22 +101,20 @@ runs:
         channel-id: ${{ inputs.slack-channel }}
         payload: |
           {
-            "text": "Deployment finished (Completed)",
-            "attachments": [
-              {
-                "pretext": "Deployment finished",
-                "color": "28a745",
-                "fields": [
-                  {
-                    "title": "Status",
-                    "short": true,
-                    "value": "Completed"
-                  }
-                ]
-              }
-            ]
+             "attachments":[
+                {
+                   "mrkdwn_in": ["text"],
+                   "color":"green",
+                   "text":"${{ inputs.icon }} *Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} ${{ inputs.icon }}",
+                   "fields":[
+                      {
+                         "title": "Succeeded",
+                         "short":true,
+                      }
+                   ]
+                }
+             ]
           }
-        #slack-message: '*Deployment:* ${{ inputs.application }} *Environment:* ${{ inputs.environment }} *Country:* ${{ inputs.icon }} *branch/release:* ${{ inputs.branch-release }} *Status:* succeeded! ✅'
         update-ts: ${{ steps.slack.outputs.ts }}
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
@@ -127,7 +124,47 @@ runs:
       uses: slackapi/slack-github-action@v1.21.0
       with:
         channel-id: ${{ inputs.slack-channel }}
-        slack-message: '*Deployment:* ${{ inputs.application }} *Environment:* ${{ inputs.environment }} *Country:* ${{ inputs.icon }} *branch/release:* ${{ inputs.branch-release }} *Status:* failed! ❌'
+        payload: |
+          {
+             "attachments":[
+                {
+                   "mrkdwn_in": ["text"],
+                   "color":"red",
+                   "text":"${{ inputs.icon }} *Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} ${{ inputs.icon }}",
+                   "fields":[
+                      {
+                         "title": "Failed",
+                         "short":true,
+                      }
+                   ]
+                }
+             ]
+          }
+        update-ts: ${{ steps.slack.outputs.ts }}
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+
+    - name: 🚀 Slack cancelled ⚠️
+      if: cancelled()
+      uses: slackapi/slack-github-action@v1.21.0
+      with:
+        channel-id: ${{ inputs.slack-channel }}
+        payload: |
+          {
+             "attachments":[
+                {
+                   "mrkdwn_in": ["text"],
+                   "color":"yellow",
+                   "text":"${{ inputs.icon }} *Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} ${{ inputs.icon }}",
+                   "fields":[
+                      {
+                         "title": "Cancelled",
+                         "short":true,
+                      }
+                   ]
+                }
+             ]
+          }
         update-ts: ${{ steps.slack.outputs.ts }}
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
