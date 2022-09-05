@@ -45,7 +45,24 @@ runs:
       uses: slackapi/slack-github-action@v1.21.0
       with:
         channel-id: ${{ inputs.slack-channel }}
-        slack-message: '*Deployment:* ${{ inputs.application }} *Environment:* ${{ inputs.environment }} *Country:* ${{ inputs.icon }} *branch/release:* ${{ inputs.branch-release }} *Status:* started! ⚠️'
+        payload: |
+          {
+            "text": "Deployment started (In Progress)",
+            "attachments": [
+              {
+                "pretext": "Deployment started",
+                "color": "dbab09",
+                "fields": [
+                  {
+                    "title": "Status",
+                    "short": true,
+                    "value": "In Progress"
+                  }
+                ]
+              }
+            ]
+          }
+        #slack-message: '*Deployment:* ${{ inputs.application }} *Environment:* ${{ inputs.environment }} *Country:* ${{ inputs.icon }} *branch/release:* ${{ inputs.branch-release }} *Status:* started! ⚠️'
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
 
@@ -83,7 +100,24 @@ runs:
       uses: slackapi/slack-github-action@v1.21.0
       with:
         channel-id: ${{ inputs.slack-channel }}
-        slack-message: '*Deployment:* ${{ inputs.application }} *Environment:* ${{ inputs.environment }} *Country:* ${{ inputs.icon }} *branch/release:* ${{ inputs.branch-release }} *Status:* succeeded! ✅'
+        payload: |
+          {
+            "text": "Deployment finished (Completed)",
+            "attachments": [
+              {
+                "pretext": "Deployment finished",
+                "color": "28a745",
+                "fields": [
+                  {
+                    "title": "Status",
+                    "short": true,
+                    "value": "Completed"
+                  }
+                ]
+              }
+            ]
+          }
+        #slack-message: '*Deployment:* ${{ inputs.application }} *Environment:* ${{ inputs.environment }} *Country:* ${{ inputs.icon }} *branch/release:* ${{ inputs.branch-release }} *Status:* succeeded! ✅'
         update-ts: ${{ steps.slack.outputs.ts }}
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
