@@ -109,7 +109,7 @@ runs:
                    "fields":[
                       {
                          "title": "Succeeded",
-                         "short":true,
+                         "short":true
                       }
                    ]
                 }
@@ -134,7 +134,7 @@ runs:
                    "fields":[
                       {
                          "title": "Failed",
-                         "short":true,
+                         "short":true
                       }
                    ]
                 }
@@ -159,7 +159,7 @@ runs:
                    "fields":[
                       {
                          "title": "Cancelled",
-                         "short":true,
+                         "short":true
                       }
                    ]
                 }
