@@ -104,7 +104,7 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "color":"green",
+                   "color":"#03fc28",
                    "text":"${{ inputs.icon }} *Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} ${{ inputs.icon }}",
                    "fields":[
                       {
@@ -129,7 +129,7 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "color":"red",
+                   "color":"#fc4503",
                    "text":"${{ inputs.icon }} *Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} ${{ inputs.icon }}",
                    "fields":[
                       {
@@ -154,7 +154,7 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "color":"yellow",
+                   "color":"#fce803",
                    "text":"${{ inputs.icon }} *Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} ${{ inputs.icon }}",
                    "fields":[
                       {
