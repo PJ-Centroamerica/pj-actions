@@ -51,9 +51,9 @@ runs:
                 {
                    "mrkdwn_in": ["text"],
                    "author_name":"Github actions",
-                   "title_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                   "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
                    "color":"",
-                   "text":"${{ inputs.icon }} *Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} ${{ inputs.icon }}",
+                   "text":"*Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} | ${{ inputs.icon }}",
                    "fields":[
                       {
                          "title": "Status",
@@ -107,9 +107,9 @@ runs:
                 {
                    "mrkdwn_in": ["text"],
                    "author_name":"Github actions",
-                   "title_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                   "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
                    "color":"#03fc28",
-                   "text":"${{ inputs.icon }} *Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} ${{ inputs.icon }}",
+                   "text":"*Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} | ${{ inputs.icon }}",
                    "fields":[
                       {
                          "title": "Succeeded",
@@ -134,9 +134,9 @@ runs:
                 {
                    "mrkdwn_in": ["text"],
                    "author_name":"Github actions",
-                   "title_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                   "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
                    "color":"#fc4503",
-                   "text":"${{ inputs.icon }} *Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} ${{ inputs.icon }}",
+                   "text":"*Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} | ${{ inputs.icon }}",
                    "fields":[
                       {
                          "title": "Failed",
@@ -161,9 +161,9 @@ runs:
                 {
                    "mrkdwn_in": ["text"],
                    "author_name":"Github actions",
-                   "title_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                   "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
                    "color":"#fce803",
-                   "text":"${{ inputs.icon }} *Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} ${{ inputs.icon }}",
+                   "text":"*Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} | ${{ inputs.icon }}",
                    "fields":[
                       {
                          "title": "Cancelled",
