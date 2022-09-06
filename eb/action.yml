@@ -107,7 +107,7 @@ runs:
                 {
                    "mrkdwn_in": ["text"],
                    "author_name":"Github actions",
-                   "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                   "author_link":"https://${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
                    "color":"#03fc28",
                    "text":"*Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} | ${{ inputs.icon }}",
                    "fields":[
@@ -134,7 +134,7 @@ runs:
                 {
                    "mrkdwn_in": ["text"],
                    "author_name":"Github actions",
-                   "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                   "author_link":"https://${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
                    "color":"#fc4503",
                    "text":"*Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} | ${{ inputs.icon }}",
                    "fields":[
@@ -161,7 +161,7 @@ runs:
                 {
                    "mrkdwn_in": ["text"],
                    "author_name":"Github actions",
-                   "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                   "author_link":"https://${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
                    "color":"#fce803",
                    "text":"*Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} | ${{ inputs.icon }}",
                    "fields":[
