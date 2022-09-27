@@ -39,6 +39,11 @@ runs:
     using: "composite"
     steps:
 
+    - name: 🔧  Get tag name
+      shell: bash
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: echo "RELEASE=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
     - name: 🚀 Slack status
       if: ${{ always() }}
       id: slack
@@ -50,22 +55,16 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "author_name":"Github actions",
+                   "author_name":"${{ inputs.icon }} ${{ inputs.application }} deployment",
                    "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
                    "color":"",
-                   "text":"*Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} | ${{ inputs.icon }}",
-                   "fields":[
-                      {
-                         "title": "Status",
-                         "short":true,
-                         "value":"_In Progress_"
-                      }
-                   ]
+                   "text":"Release* ${{ env.RELEASE }}"
                 }
              ]
           }
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
     - name: 🌧️ Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -76,11 +75,6 @@ runs:
 
     - name: ✨ Checkout Code
       uses: actions/checkout@v3
-
-    - name: 🔧  Get tag name
-      shell: bash
-      if: startsWith(github.ref, 'refs/tags/v')
-      run: echo "RELEASE=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
     - name: 🧰 Install eb-cli
       shell: bash
@@ -111,10 +105,10 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "author_name":"*Deployment:* ${{ inputs.application }}",
+                   "author_name":"${{ inputs.icon }} ${{ inputs.application }} deployment",
                    "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
                    "color":"#03fc28",
-                   "text":"*release* ${{ env.RELEASE }} | ${{ inputs.icon }}"
+                   "text":"*Release:* ${{ env.RELEASE }}"
                 }
              ]
           }
@@ -133,10 +127,10 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "author_name":"*Deployment:* ${{ inputs.application }}",
+                   "author_name":"${{ inputs.icon }} ${{ inputs.application }} deployment",
                    "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
                    "color":"#fc4503",
-                   "text":"*release* ${{ env.RELEASE }} | ${{ inputs.icon }}"
+                   "text":"*Release:* ${{ env.RELEASE }}"
                 }
              ]
           }
@@ -155,10 +149,10 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "author_name":"*Deployment:* ${{ inputs.application }}",
+                   "author_name":"${{ inputs.icon }} ${{ inputs.application }} deployment",
                    "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
                    "color":"#fce803",
-                   "text":"*release* ${{ env.RELEASE }} | ${{ inputs.icon }}"
+                   "text":"*Release:* ${{ env.RELEASE }}"
                 }
              ]
           }
