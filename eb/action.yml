@@ -55,10 +55,10 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "author_name":"${{ inputs.icon }} ${{ inputs.application }} deployment",
+                   "author_name":"Deployment ${{ inputs.application }}",
                    "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
                    "color":"",
-                   "text":"*Release* ${{ env.RELEASE }}"
+                   "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ {{ github.actor }}_"
                 }
              ]
           }
@@ -105,10 +105,10 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "author_name":"${{ inputs.icon }} ${{ inputs.application }} deployment",
+                   "author_name":"Deployment ${{ inputs.application }}",
                    "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
                    "color":"#03fc28",
-                   "text":"*Release:* ${{ env.RELEASE }}"
+                   "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ {{ github.actor }}_"
                 }
              ]
           }
@@ -127,10 +127,10 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "author_name":"${{ inputs.icon }} ${{ inputs.application }} deployment",
+                   "author_name":"Deployment ${{ inputs.application }}",
                    "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
                    "color":"#fc4503",
-                   "text":"*Release:* ${{ env.RELEASE }}"
+                   "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ {{ github.actor }}_"
                 }
              ]
           }
@@ -149,10 +149,10 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "author_name":"${{ inputs.icon }} ${{ inputs.application }} deployment",
+                   "author_name":"Deployment ${{ inputs.application }}",
                    "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
                    "color":"#fce803",
-                   "text":"*Release:* ${{ env.RELEASE }}"
+                   "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ {{ github.actor }}_"
                 }
              ]
           }
