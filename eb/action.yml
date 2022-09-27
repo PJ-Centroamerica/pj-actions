@@ -40,7 +40,7 @@ runs:
     steps:
 
     - name: 🚀 Slack status
-      if: always()
+      if: ${{ always() }}
       id: slack
       uses: slackapi/slack-github-action@v1.21.0
       with:
@@ -77,6 +77,10 @@ runs:
     - name: ✨ Checkout Code
       uses: actions/checkout@v3
 
+    - name: 🔧  Get tag name
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: echo "RELEASE=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
     - name: 🧰 Install eb-cli
       shell: bash
       run: |
@@ -97,7 +101,7 @@ runs:
         eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process
 
     - name: 🚀 Slack success ✅
-      if: success()
+      if: ${{ success() }}
       uses: slackapi/slack-github-action@v1.21.0
       with:
         channel-id: ${{ inputs.slack-channel }}
@@ -106,25 +110,20 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "author_name":"Github actions",
+                   "author_name":"*Deployment:* ${{ inputs.application }}",
                    "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
                    "color":"#03fc28",
-                   "text":"*Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} | ${{ inputs.icon }}",
-                   "fields":[
-                      {
-                         "title": "Succeeded",
-                         "short":true
-                      }
-                   ]
+                   "text":"*release* ${{ env.RELEASE }} | ${{ inputs.icon }}"
                 }
              ]
           }
         update-ts: ${{ steps.slack.outputs.ts }}
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
     - name: 🚀 Slack failure ❌
-      if: failure()
+      if: ${{ failure() }}
       uses: slackapi/slack-github-action@v1.21.0
       with:
         channel-id: ${{ inputs.slack-channel }}
@@ -133,25 +132,20 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "author_name":"Github actions",
+                   "author_name":"*Deployment:* ${{ inputs.application }}",
                    "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
                    "color":"#fc4503",
-                   "text":"*Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} | ${{ inputs.icon }}",
-                   "fields":[
-                      {
-                         "title": "Failed",
-                         "short":true
-                      }
-                   ]
+                   "text":"*release* ${{ env.RELEASE }} | ${{ inputs.icon }}"
                 }
              ]
           }
         update-ts: ${{ steps.slack.outputs.ts }}
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
     - name: 🚀 Slack cancelled ⚠️
-      if: cancelled()
+      if: ${{ cancelled() }}
       uses: slackapi/slack-github-action@v1.21.0
       with:
         channel-id: ${{ inputs.slack-channel }}
@@ -160,19 +154,14 @@ runs:
              "attachments":[
                 {
                    "mrkdwn_in": ["text"],
-                   "author_name":"Github actions",
+                   "author_name":"*Deployment:* ${{ inputs.application }}",
                    "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
                    "color":"#fce803",
-                   "text":"*Deployment:* ${{ inputs.application }} | *tag/release* ${{ inputs.branch-release }} | ${{ inputs.icon }}",
-                   "fields":[
-                      {
-                         "title": "Cancelled",
-                         "short":true
-                      }
-                   ]
+                   "text":"*release* ${{ env.RELEASE }} | ${{ inputs.icon }}"
                 }
              ]
           }
         update-ts: ${{ steps.slack.outputs.ts }}
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
