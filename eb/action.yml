@@ -58,7 +58,7 @@ runs:
                    "author_name":"${{ inputs.icon }} ${{ inputs.application }} deployment",
                    "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
                    "color":"",
-                   "text":"Release* ${{ env.RELEASE }}"
+                   "text":"*Release* ${{ env.RELEASE }}"
                 }
              ]
           }
