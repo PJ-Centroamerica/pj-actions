@@ -4,7 +4,10 @@ description: 'Elastic Beanstalk workflow deployment'
 inputs:
   application:
     description: 'Application name'
-    required: true    
+    required: true
+  application_name:
+    description: 'Alternative application name'
+    required: false
   environment:
     description: 'Environment deployment'
     required: true
@@ -92,7 +95,7 @@ runs:
       shell: bash
       run: |
         eb --version
-        eb init ${{ inputs.application }} --region ${{ inputs.aws-region }} --platform "${{ inputs.plataform }}"
+        eb init ${{ inputs.application }} || ${{ inputs.application_name }} --region ${{ inputs.aws-region }} --platform "${{ inputs.plataform }}"
         eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process
 
     - name: 🚀 Slack success ✅
