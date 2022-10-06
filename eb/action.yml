@@ -95,7 +95,7 @@ runs:
       shell: bash
       run: |
         eb --version
-        eb init ${{ inputs.application_name }} --region ${{ inputs.aws-region }} --platform "${{ inputs.plataform }}"
+        eb init ${{ inputs.application }} || ${{ inputs.application_name }} --region ${{ inputs.aws-region }} --platform "${{ inputs.plataform }}"
         eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process
 
     - name: 🚀 Slack success ✅
