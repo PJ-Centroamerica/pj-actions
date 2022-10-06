@@ -27,7 +27,7 @@ inputs:
     required: true
   plataform:
     description: 'Environment plataform'
-    requied: true
+    required: true
   branch-release:
     description: 'Branch or release to deploy'
     required: true
