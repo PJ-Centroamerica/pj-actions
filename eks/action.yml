@@ -112,7 +112,7 @@ runs:
         cat ./eks/deployment.yaml | envsubst | kubectl apply --wait=true -f -
         kubectl rollout status deployment/$PROJECT_NAME --namespace $NAMESPACE-$ENVIRONMENT
       env:
-        IMAGE_URL: ${{ inputs.aws-ecr-registry }}/${{ inputs.application }}:${{ env.RELEASE || inputs.branch-release }}
+        IMAGE_URL: ${{ inputs.aws-ecr-registry }}:${{ env.RELEASE || inputs.branch-release }}
         PROJECT_NAME: ${{ inputs.application }}
         NAMESPACE: ${{ inputs.application }}
         ENVIRONMENT: ${{ inputs.environmnet }}

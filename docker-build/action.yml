@@ -93,7 +93,7 @@ runs:
         docker build -t $IMAGE_URL .
         docker push $IMAGE_URL
       env:
-        IMAGE_URL: ${{ inputs.aws-ecr-registry }}/${{ inputs.application }}:${{ env.RELEASE || inputs.branch-release }}
+        IMAGE_URL: ${{ inputs.aws-ecr-registry }}:${{ env.RELEASE || inputs.branch-release }}
 
     - name: 🚀 Slack success ✅
       if: ${{ success() }}
