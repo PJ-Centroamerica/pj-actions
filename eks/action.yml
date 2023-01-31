@@ -1,0 +1,184 @@
+name: 'EKS Deployment'
+description: 'EKS workflow deployment'
+
+inputs:
+  application:
+    description: 'Application name'
+    required: true
+  application_name:
+    description: 'Alternative application name'
+    required: false
+  environment:
+    description: 'Environment deployment'
+    required: true
+    default: 'development'
+  aws-access-key-id:
+    description: 'AWS access ID'
+    required: true
+  aws-secret-access-key:
+    description: 'AWS access secret key'
+    required: true
+  aws-region:
+    description: 'AWS region'
+    required: true
+    default: us-east-1
+  aws-cluster-eks:
+    description: 'AWS Cluster EKS name'
+    required: true
+  aws-ecr-registry:
+    description: ''
+  icon:
+    description: 'Country icon'
+    required: true
+  plataform:
+    description: 'Environment plataform'
+    required: true
+  branch-release:
+    description: 'Branch or release to deploy'
+    required: true
+  slack-bot-token:
+    description: 'Slack token'
+    required: true
+  slack-channel:
+    description: 'Slack channel'
+    required: true
+
+runs:
+    using: "composite"
+    steps:
+
+    - name: 🔧  Get tag name
+      shell: bash
+      if: "startsWith(github.ref, 'refs/tags/v')"
+      run: |
+        echo "RELEASE=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+    - name: 🚀 Slack status
+      if: ${{ always() }}
+      id: slack
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        channel-id: ${{ inputs.slack-channel }}
+        payload: |
+          {
+             "attachments":[
+                {
+                   "mrkdwn_in": ["text"],
+                   "author_name":"Deployment ${{ inputs.application }}",
+                   "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                   "color":"",
+                   "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
+                }
+             ]
+          }
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
+
+    - name: 🌧️ Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: ${{ inputs.aws-region }}
+
+    - name: 🧰 Install and configure kubectl
+      run: |
+        # Version: https://storage.googleapis.com/kubernetes-release/release/stable.txt
+        curl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+          --progress-bar \
+          --location \
+          --remote-name
+        chmod +x kubectl
+        sudo mv kubectl /usr/local/bin/
+      env:
+        KUBECTL_VERSION: v1.26.1
+
+    - name: 🧰 Install awscli
+      run: |
+        curl -sL https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI_VERSION}.zip -o awscliv2.zip
+        unzip awscliv2.zip
+        sudo ./aws/install
+      env:
+        AWSCLI_VERSION: 2.6.1
+
+      - name: Configure kubectl
+        id: kubeconfig
+        run: |
+          aws eks --region ${{ inputs.aws-region }} update-kubeconfig --name ${{ inputs.aws-cluster-eks }}
+
+    - name: 🔨 Deployment to the EKS!
+      run: |
+        cat ./eks/deployment.yaml | envsubst | kubectl apply --wait=true -f -
+        kubectl rollout status deployment/$PROJECT_NAME --namespace $NAMESPACE-$ENVIRONMENT
+      env:
+        IMAGE_URL: ${{ inputs.aws-ecr-registry }}/${{ inputs.application }}:${{ env.RELEASE || inputs.branch-release }}
+        PROJECT_NAME: ${{ inputs.application }}
+        NAMESPACE: ${{ inputs.application }}
+        ENVIRONMENT: ${{ inputs.environmnet }}
+
+    - name: 🚀 Slack success ✅
+      if: ${{ success() }}
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        channel-id: ${{ inputs.slack-channel }}
+        payload: |
+          {
+             "attachments":[
+                {
+                   "mrkdwn_in": ["text"],
+                   "author_name":"Deployment ${{ inputs.application }}",
+                   "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
+                   "color":"#03fc28",
+                   "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
+                }
+             ]
+          }
+        update-ts: ${{ steps.slack.outputs.ts }}
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
+
+    - name: 🚀 Slack failure ❌
+      if: ${{ failure() }}
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        channel-id: ${{ inputs.slack-channel }}
+        payload: |
+          {
+             "attachments":[
+                {
+                   "mrkdwn_in": ["text"],
+                   "author_name":"Deployment ${{ inputs.application }}",
+                   "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
+                   "color":"#fc4503",
+                   "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
+                }
+             ]
+          }
+        update-ts: ${{ steps.slack.outputs.ts }}
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
+
+    - name: 🚀 Slack cancelled ⚠️
+      if: ${{ cancelled() }}
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        channel-id: ${{ inputs.slack-channel }}
+        payload: |
+          {
+             "attachments":[
+                {
+                   "mrkdwn_in": ["text"],
+                   "author_name":"Deployment ${{ inputs.application }}",
+                   "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
+                   "color":"#fce803",
+                   "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
+                }
+             ]
+          }
+        update-ts: ${{ steps.slack.outputs.ts }}
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
