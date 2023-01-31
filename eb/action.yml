@@ -50,7 +50,7 @@ runs:
     - name: 🚀 Slack status
       if: ${{ always() }}
       id: slack
-      uses: slackapi/slack-github-action@v1.21.0
+      uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: ${{ inputs.slack-channel }}
         payload: |
@@ -100,7 +100,7 @@ runs:
 
     - name: 🚀 Slack success ✅
       if: ${{ success() }}
-      uses: slackapi/slack-github-action@v1.21.0
+      uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: ${{ inputs.slack-channel }}
         payload: |
@@ -122,7 +122,7 @@ runs:
 
     - name: 🚀 Slack failure ❌
       if: ${{ failure() }}
-      uses: slackapi/slack-github-action@v1.21.0
+      uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: ${{ inputs.slack-channel }}
         payload: |
@@ -144,7 +144,7 @@ runs:
 
     - name: 🚀 Slack cancelled ⚠️
       if: ${{ cancelled() }}
-      uses: slackapi/slack-github-action@v1.21.0
+      uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: ${{ inputs.slack-channel }}
         payload: |
