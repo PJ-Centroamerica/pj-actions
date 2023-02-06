@@ -1,0 +1,31 @@
+name: 'EB Deployment'
+description: 'Elastic Beanstalk workflow deployment'
+
+inputs:
+  new-relic-key:
+    description: 'New Relic KEY'
+    required: true
+  new-relic-guid:
+    description: 'New Relic GUID'
+    required: true
+
+runs:
+    using: "composite"
+    steps:
+
+    - name: 🔧  Get tag name
+      shell: bash
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: echo "RELEASE=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+    - name: 🔧 New Relic release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: newrelic/deployment-marker-action@v2.1.0
+      continue-on-error: true
+      with:
+        apiKey: ${{ inputs.new-relic-key }}
+        guid: ${{ inputs.new-relic-guid }}
+        version: "${{ env.RELEASE }}"
+        commit: "${{ github.sha }}"
+        description: "Automated Deployment via Github Actions"
+        user: "${{ github.actor }}"
