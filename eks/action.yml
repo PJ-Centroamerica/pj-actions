@@ -1,5 +1,5 @@
-name: 'EB Deployment'
-description: 'Elastic Beanstalk workflow deployment'
+name: 'EKS Deployment'
+description: 'EKS workflow deployment'
 
 inputs:
   application:
@@ -22,6 +22,11 @@ inputs:
     description: 'AWS region'
     required: true
     default: us-east-1
+  aws-cluster-eks:
+    description: 'AWS Cluster EKS name'
+    required: true
+  aws-ecr-registry:
+    description: ''
   icon:
     description: 'Country icon'
     required: true
@@ -44,8 +49,9 @@ runs:
 
     - name: 🔧  Get tag name
       shell: bash
-      if: startsWith(github.ref, 'refs/tags/v')
-      run: echo "RELEASE=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+      if: "startsWith(github.ref, 'refs/tags/v')"
+      run: |
+        echo "RELEASE=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
     - name: 🚀 Slack status
       if: ${{ always() }}
@@ -70,34 +76,46 @@ runs:
         RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
     - name: 🌧️ Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
         aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
         aws-region: ${{ inputs.aws-region }}
 
-    - name: ✨ Checkout Code
-      uses: actions/checkout@v3
-
-    - name: 🧰 Install eb-cli
-      shell: bash
+    - name: 🧰 Install and configure kubectl
       run: |
-        sudo pip config --global set global.index-url http://${PROXY_DOMAIN}:${PROXY_PORT}${PROXY_PATH}
-        sudo pip config --global set global.trusted-host ${PROXY_DOMAIN}
-        python -m pip install --upgrade pip
-        pip install urllib3==1.26.9
-        pip install awsebcli --upgrade
+        # Version: https://storage.googleapis.com/kubernetes-release/release/stable.txt
+        curl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+          --progress-bar \
+          --location \
+          --remote-name
+        chmod +x kubectl
+        sudo mv kubectl /usr/local/bin/
       env:
-        PROXY_DOMAIN: nexus.nexus.svc.local
-        PROXY_PORT: 8081
-        PROXY_PATH: /repository/pip-proxy/simple/
+        KUBECTL_VERSION: v1.26.1
 
-    - name: 🛸 Deploy Elastic Beanstalk
-      shell: bash
+    - name: 🧰 Install awscli
       run: |
-        eb --version
-        eb init ${{ inputs.application_name || inputs.application }} --region ${{ inputs.aws-region }} --platform "${{ inputs.plataform }}"
-        eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process
+        curl -sL https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI_VERSION}.zip -o awscliv2.zip
+        unzip awscliv2.zip
+        sudo ./aws/install
+      env:
+        AWSCLI_VERSION: 2.6.1
+
+      - name: Configure kubectl
+        id: kubeconfig
+        run: |
+          aws eks --region ${{ inputs.aws-region }} update-kubeconfig --name ${{ inputs.aws-cluster-eks }}
+
+    - name: 🔨 Deployment to the EKS!
+      run: |
+        cat ./eks/deployment.yaml | envsubst | kubectl apply --wait=true -f -
+        kubectl rollout status deployment/$PROJECT_NAME --namespace $NAMESPACE-$ENVIRONMENT
+      env:
+        IMAGE_URL: ${{ inputs.aws-ecr-registry }}:${{ env.RELEASE || inputs.branch-release }}
+        PROJECT_NAME: ${{ inputs.application }}
+        NAMESPACE: ${{ inputs.application }}
+        ENVIRONMENT: ${{ inputs.environmnet }}
 
     - name: 🚀 Slack success ✅
       if: ${{ success() }}
