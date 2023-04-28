@@ -120,6 +120,14 @@ runs:
         SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
         RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
+    - name: 🔔 Trigger Sonar
+      if: ${{ inputs.environment == 'development' }}
+      uses: sonarsource/sonarqube-scan-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      continue-on-error: true
+
     - name: 🚀 Slack failure ❌
       if: ${{ failure() }}
       uses: slackapi/slack-github-action@v1.23.0
