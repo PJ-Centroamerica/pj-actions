@@ -143,20 +143,20 @@ runs:
             "activityImage": "",  
             "facts": [{  
                 "name": "URL",  
-                "value": "[Rolling Workflow](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }})}"  
+                "value": "[Rolling Workflow](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }})"
             },  
             {  
                 "name": "Application",  
-                "value": "${{ inputs.application }}"  
+                "value": "[${{ inputs.application }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }})"
             },  
             {  
-                "name": "Services",  
-                "value": "${{ inputs.icon }} *Release* ${{ env.RELEASE }}"  
-            },  
-            {  
-                "name": "Artifacts",  
-                "value": "${artifact.buildFullDisplayName}"  
-            },  
+                "name": "Country",
+                "value": "${{ inputs.icon }}"
+            },
+            {
+                "name": "Release",
+                "value": "${{ env.RELEASE }}"
+            },
             {  
                 "name": "Triggered By",  
                 "value": "@${{ github.actor }}"
@@ -164,6 +164,8 @@ runs:
             "markdown": true  
           }]  
         }'
+      env:
+        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
     - name: 🚀 Slack failure ❌
       if: ${{ failure() }}
