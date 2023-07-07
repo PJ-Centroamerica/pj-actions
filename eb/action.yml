@@ -37,6 +37,9 @@ inputs:
   slack-channel:
     description: 'Slack channel'
     required: true
+  teams-webhook:
+    description: 'Teams webhook'
+    requierd: false
 
 runs:
     using: "composite"
