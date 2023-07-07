@@ -126,15 +126,44 @@ runs:
 
     - name:  🚀 Teams success ✅
       if: ${{ success() }}
-      uses: aliencube/microsoft-teams-actions@v0.8.0
-      with:
-        webhook_uri: ${{ inputs.teams-webhook }}
-        title: Deployment ${{ inputs.application }}
-        summary: ${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_
-        text: ${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_
-        theme_color: 03fc28
-        sections: '[{ "activityTitle": "Deployment" }]'
-        actions: '[{ "@type": "OpenUri", "name": "GH actions", "targets": [{"uri": "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}" }] }]'
+      shell: bash
+      run: |
+        curl --silent \
+        --output /dev/null \
+        --header 'content-type: application/json' \
+        --url 'https://pjespana.webhook.office.com/webhookb2/65956035-7186-4cf7-b12e-fcc893883b7b@13dfae86-18c7-40da-884d-fee62609a1f4/IncomingWebhook/f23f53332c4046f29f6a57249b229441/47b99226-c1d9-4d79-a1d0-6ca628a41c4f' \
+        --data-raw '{  
+        "@type": "MessageCard",  
+        "@context": "http://schema.org/extensions",  
+        "themeColor": "03fc28",  
+        "summary": "Rolling Workflow started",  
+        "sections": [{  
+            "activityTitle": "Rolling Workflow started",  
+            "activitySubtitle": "Workflow Notification",  
+            "activityImage": "",  
+            "facts": [{  
+                "name": "URL",  
+                "value": "[Rolling Workflow](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }})}"  
+            },  
+            {  
+                "name": "Application",  
+                "value": "${{ inputs.application }}"  
+            },  
+            {  
+                "name": "Services",  
+                "value": "${{ inputs.icon }} *Release* ${{ env.RELEASE }}"  
+            },  
+            {  
+                "name": "Artifacts",  
+                "value": "${artifact.buildFullDisplayName}"  
+            },  
+            {  
+                "name": "Triggered By",  
+                "value": "@${{ github.actor }}"
+            }],  
+            "markdown": true  
+          }]  
+        }'
 
     - name: 🚀 Slack failure ❌
       if: ${{ failure() }}
