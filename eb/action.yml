@@ -121,6 +121,17 @@ runs:
         SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
         RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
+    - name:  🚀 Teams success ✅
+      uses: aliencube/microsoft-teams-actions@v0.8.0
+      with:
+        webhook_uri: ${{ secrets.teams_webhook }}
+        title: "Deployment ${{ inputs.application }}"
+        summary: "${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
+        text: "${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
+        theme_color: 03fc28
+        sections: '[{ "activityTitle": "Deployment" }]'
+        actions: '[{ "@type": "OpenUri", "name": "GH actions", "targets": [{"uri": "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}" }] }]'
+
     - name: 🚀 Slack failure ❌
       if: ${{ failure() }}
       uses: slackapi/slack-github-action@v1.23.0
