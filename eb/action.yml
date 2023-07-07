@@ -131,30 +131,29 @@ runs:
         curl --silent \
         --output /dev/null \
         --header 'content-type: application/json' \
-        --url 'https://pjespana.webhook.office.com/webhookb2/65956035-7186-4cf7-b12e-fcc893883b7b@13dfae86-18c7-40da-884d-fee62609a1f4/IncomingWebhook/f23f53332c4046f29f6a57249b229441/47b99226-c1d9-4d79-a1d0-6ca628a41c4f' \
+        --url '${{ input.teams-webhook }}' \
         --data-raw '{  
         "@type": "MessageCard",  
         "@context": "http://schema.org/extensions",  
-        "themeColor": "03fc28",  
+        "themeColor": "03fc28",
+        "summary": "Backend deployment 🚀",
         "sections": [{  
-            "activityTitle": "Rolling Workflow started",  
-            "activitySubtitle": "Workflow Notification",  
-            "activityImage": "https://avatars.slack-edge.com/2022-03-23/3286198158994_742bc5a09a8bdb9222b4_512.jpg",  
+            "activityTitle": "Backend deployment 🚀", 
             "facts": [ 
             {  
-                "name": "**Application**",  
-                "value": "[**${{ inputs.application }}**](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }})"
+                "name": "Application",  
+                "value": "[${{ inputs.application }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }})"
             },  
             {  
-                "name": "**Country**",
+                "name": "Country",
                 "value": "${{ inputs.icon }}"
             },
             {
-                "name": "**Release**",
+                "name": "Release",
                 "value": "${{ env.RELEASE }}"
             },
             {  
-                "name": "**Triggered By**",  
+                "name": "Triggered By",  
                 "value": "@${{ github.actor }}"
             }],  
             "markdown": true  
