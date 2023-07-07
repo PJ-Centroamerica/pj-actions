@@ -131,7 +131,7 @@ runs:
         curl --silent \
         --output /dev/null \
         --header 'content-type: application/json' \
-        --url '${{ input.teams-webhook }}' \
+        --url '${{ inputs.teams-webhook }}' \
         --data-raw '{  
         "@type": "MessageCard",  
         "@context": "http://schema.org/extensions",  
