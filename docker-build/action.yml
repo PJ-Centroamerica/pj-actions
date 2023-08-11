@@ -22,6 +22,10 @@ inputs:
   aws-ecr-registry:
     description: 'Docker registry from AWS'
     required: true
+  folder:
+    description: 'Path build'
+    required: false
+    default: ./
 
 runs:
     using: "composite"
@@ -46,6 +50,7 @@ runs:
         ECR_REPOSITORY: ${{ inputs.application }}
         IMAGE_TAG: latest
       run: |
+        cd ${{ inputs.folder }}
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
