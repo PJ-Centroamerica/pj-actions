@@ -2,8 +2,8 @@ name: 'Docker build'
 description: 'Docker build per environment'
 
 inputs:
-  lambda:
-    description: 'Lambda name'
+  application:
+    description: 'app name'
     required: true
   environment:
     description: 'Environment name'
@@ -43,7 +43,7 @@ runs:
     - name: 👷 Build, tag, and push the image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ inputs.lambda }}
+        ECR_REPOSITORY: ${{ inputs.application }}
         IMAGE_TAG: latest
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
