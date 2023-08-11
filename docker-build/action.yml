@@ -22,6 +22,10 @@ inputs:
   aws-ecr-registry:
     description: 'Docker registry from AWS'
     required: true
+  folder:
+    description: 'Path build'
+    required: false
+    default: ./
 
 runs:
     using: "composite"
@@ -41,12 +45,14 @@ runs:
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: 👷 Build, tag, and push the image to Amazon ECR
+      shell: bash
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ inputs.application }}
         IMAGE_TAG: latest
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        cd ${{ inputs.folder }}
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg CONTRY=${{ inputs.contry }} .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
 
