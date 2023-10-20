@@ -1,0 +1,174 @@
+name: 'Terraform'
+description: 'Terraform Github Actions'
+
+inputs:
+  aws-access-key-id:
+    description: 'AWS access ID'
+    required: true
+  aws-secret-access-key:
+    description: 'AWS access secret key'
+    required: true
+  aws-region:
+    description: 'AWS region'
+    required: true
+    default: us-east-1
+  country:
+    description: 'Deployment country'
+    required: true
+  country-icon:
+    description: 'Deployment country icon'
+    required: true
+  terraform-version:
+    description: 'Terraform verision'
+    required: true
+  terraform-action:
+    description: 'Terraform action (plan or apply)'
+    required: true
+    default: plan
+  tf-var-variables:
+    description: 'TF_VARS from secrets'
+    required: true
+  ssh-private-key:
+    description: 'SSH key used for GitHub modules'
+    required: true
+  awscli-version:
+    description: 'aws cli version'
+    required: true
+  teams-webhook:
+    description: 'Teams webhook'
+    requierd: false
+
+runs:
+    using: "composite"
+    steps:
+
+    steps:
+
+    - name: 📒 Checkout repo
+    - uses: actions/checkout@v3
+
+    - name: 🧰 Setup terraform
+    - uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ input.terraform-version }}
+
+    - name: 🧰 Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: 🧰 Install awscli
+      run: |
+        curl -sL https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI_VERSION}.zip -o awscliv2.zip
+        unzip awscliv2.zip
+        sudo ./aws/install
+      env:
+        AWSCLI_VERSION: ${{ input.awscli-version }}
+
+    - name: 🌧️ Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: ${{ inputs.aws-region }}
+
+    - name: 🧑‍🔧️ Setup SSH Keys and known_hosts (Using other module - github module)
+      env:
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+        ssh-add - <<< "${{ input.ssh-private-key }}"
+
+    - name: ⤵️ Download the tfvars files
+      run: |
+        echo ${{ input.tf-var-variables }} | base64 -d > terraform.tfvars
+
+    - name: 🏭 Terraform Init
+      run: |
+        terraform init
+      env:
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
+    - name: ✅ Terraform Validate
+      run: |
+        terraform validate -no-color
+
+    - name: 📝 Terraform Plan
+      if: |
+        input.terraform-aciton == 'plan'
+      run: |
+        terraform plan -no-color 
+
+    - name: 💥 Terraform Apply
+      if: |
+        input.terraform-actino == 'apply'
+      run: |
+        terraform apply -no-color -auto-approve
+
+    - name:  🚀 Teams success ✅
+      if: ${{ success() }} && input.terraform-action == 'apply'
+      shell: bash
+      run: |
+        curl --silent \
+        --output /dev/null \
+        --header 'content-type: application/json' \
+        --url '${{ input.teams-webhook }}' \
+        --data-raw '{  
+        "@type": "MessageCard",  
+        "@context": "http://schema.org/extensions",  
+        "themeColor": "03fc28",
+        "summary": "Infra terraform deployment (success) ✅",
+        "sections": [{  
+            "activityTitle": "Infra terraform deployment (success) ✅", 
+            "facts": [ 
+            {  
+                "name": "Country",
+                "value": "${{ input.country-icon }} ${{ input.country }}"
+            },
+            {
+                "name": "Repository",
+                "value": "${{ github.repository }}"
+            },
+            {  
+                "name": "Triggered By",  
+                "value": "@${{ github.actor }}"
+            }],  
+            "markdown": true  
+          }]  
+        }'
+      continue-on-error: true
+  
+    - name:  🚀 Teams Failure ❌
+      if: ${{ failure() }} && input.terraform-action == 'apply'
+      shell: bash
+      run: |
+        curl --silent \
+        --output /dev/null \
+        --header 'content-type: application/json' \
+        --url '${{ input.teams-webhook }}' \
+        --data-raw '{  
+        "@type": "MessageCard",  
+        "@context": "http://schema.org/extensions",  
+        "themeColor": "D70000",
+        "summary": "Infra terraform deployment (failure) ❌",
+        "sections": [{  
+            "activityTitle": "Infra terraform deployment (failure) ❌", 
+            "facts": [ 
+            {  
+                "name": "Country",
+                "value": "${{ input.country-icon }} ${{ input.country }}"
+            },
+            {
+                "name": "Repository",
+                "value": "${{ github.repository }}"
+            },
+            {  
+                "name": "Triggered By",  
+                "value": "@${{ github.actor }}"
+            }],  
+            "markdown": true  
+          }]  
+        }'
+      continue-on-error: true
