@@ -104,7 +104,7 @@ runs:
       shell: bash
       id: init
       run: |
-        echo "###########################################"
+        echo "######################################################################################"
         echo "############### Terraform init: start"
         terraform init
         echo "############### Terraform init: end"
@@ -117,7 +117,7 @@ runs:
       shell: bash
       id: validate
       run: |
-        echo "###########################################"
+        echo "######################################################################################"
         echo "############### Terraform validate: start"
         terraform validate -no-color
         echo "############### Terraform validate: end"
@@ -130,7 +130,7 @@ runs:
       if: |
         inputs.terraform-aciton == 'plan'
       run: |
-        echo "###########################################"
+        echo "######################################################################################"
         echo "############### Terraform validate: start"
         terraform plan -no-color 2>&1 | tee /tmp/plan.txt
         sed -i '/Refreshing state.../d' /tmp/plan.txt
