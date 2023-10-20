@@ -98,15 +98,19 @@ runs:
 
     - name: 🏭 Terraform Init
       shell: bash
+      id: init
       run: |
         terraform init
       env:
         SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+      continue-on-error: true
 
     - name: ✅ Terraform Validate
       shell: bash
+      id: validate
       run: |
         terraform validate -no-color
+      continue-on-error: true
 
     - name: 📝 Terraform Plan
       shell: bash
@@ -145,17 +149,33 @@ runs:
             body: output
           })
 
-    - name: 📝 Terraform Plan Summary
+    - name: ✅ Terraform fmt Status
       shell: bash
-      if: |
-        steps.plan.outcome == 'success' && inputs.github-action == 'plan'
+      if: steps.fmt.outcome == 'failure'
       run: |
-        cat /tmp/plan.txt
+        echo "Error: Terraform fmt fail"
+        exit 1
 
-    - name: 📝 Terraform Plan Status
+    - name: ✅ Terraform Init Status
+      shell: bash
+      if: steps.init.outcome == 'failure'
+      run: |
+        echo "Error: Terraform init fail"
+        exit 1
+
+    - name: ✅ Terraform Validate Status
+      shell: bash
+      if: steps.validate.outcome
+      run: |
+        echo "Error: Terraform validate fail"
+        exit 1
+
+    - name: ✅ Terraform Plan Status
       shell: bash
       if: steps.plan.outcome == 'failure' && inputs.github-action == 'plan'
-      run: exit 1
+      run: |
+        echo "Error: Terraform plan fail"
+        exit 1
 
     - name: 💥 Terraform Apply
       shell: bash
