@@ -142,7 +142,7 @@ runs:
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v4.0.2
       with:
-        github-token: ${{ inputs.github_token }}
+        github-token: ${{ inputs.github-token }}
         script: |
           const fs = require("fs");
           const plan = fs.readFileSync("/tmp/plan.txt", "utf8");
