@@ -4,7 +4,16 @@ description: 'Terraform PR comment status'
 inputs:
   github-token:
     description: 'Github TOKEN'
-    requierd: false
+    required: true
+  fmt-status: 
+    descrition: 'Terraform fmt Status'
+    required: true
+  init-status:
+    descrition: 'Terraform init Status'
+    required: true
+  plan-status:
+    description: 'Terraform plan Status'
+    required: true
 
 runs:
     using: "composite"
