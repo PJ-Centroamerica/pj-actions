@@ -37,18 +37,19 @@ inputs:
   teams-webhook:
     description: 'Teams webhook'
     requierd: false
+  github-token:
+    description: 'Github TOKEN'
+    requierd: false
 
 runs:
     using: "composite"
     steps:
 
-    steps:
-
     - name: 📒 Checkout repo
-    - uses: actions/checkout@v3
+      uses: actions/checkout@v3
 
     - name: 🧰 Setup terraform
-    - uses: hashicorp/setup-terraform@v2
+      uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: ${{ input.terraform-version }}
 
@@ -95,20 +96,65 @@ runs:
       run: |
         terraform validate -no-color
 
+    - name: ✅ Terraform fmt
+      id: fmt
+      run: terraform fmt -check
+
     - name: 📝 Terraform Plan
+      id: plan
       if: |
         input.terraform-aciton == 'plan'
       run: |
-        terraform plan -no-color 
+        terraform plan -no-color 2>&1 | tee /tmp/plan.txt
+        sed -i '/Refreshing state.../d' /tmp/plan.txt
+      continue-on-error: true
+
+    - name: 🔰 Pull request comments
+      if: github.event_name == 'pull_request' && input.github-action == 'plan'
+      uses: actions/github-script@v4.0.2
+      with:
+        github-token: ${{ input.github_token }}
+        script: |
+          const fs = require("fs");
+          const plan = fs.readFileSync("/tmp/plan.txt", "utf8");
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            
+          <details><summary>Show Plan</summary>
+            
+          \`\`\`${ plan }\`\`\`
+          </details>
+            
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+
+    - name: 📝 Terraform Plan Summary
+      if: |
+        steps.plan.outcome == 'success' && input.github-action == 'plan'
+      run: |
+        cat /tmp/plan.txt
+
+    - name: 📝 Terraform Plan Status
+      if: steps.plan.outcome == 'failure' && input.github-action == 'plan'
+      run: exit 1
 
     - name: 💥 Terraform Apply
+      id: apply
       if: |
         input.terraform-actino == 'apply'
       run: |
         terraform apply -no-color -auto-approve
 
     - name:  🚀 Teams success ✅
-      if: ${{ success() }} && input.terraform-action == 'apply'
+      if: success() && steps.apply.outcome == 'success'
       shell: bash
       run: |
         curl --silent \
@@ -141,7 +187,7 @@ runs:
       continue-on-error: true
   
     - name:  🚀 Teams Failure ❌
-      if: ${{ failure() }} && input.terraform-action == 'apply'
+      if: failure() && steps.apply.outcome == 'failure'
       shell: bash
       run: |
         curl --silent \
