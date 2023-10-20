@@ -104,7 +104,7 @@ runs:
     - name: ✅ Terraform fmt
       shell: bash
       id: fmt
-      run: terraform fmt -check
+      run: terraform fmt -recursive -no-color -check -diff
 
     - name: 📝 Terraform Plan
       shell: bash
