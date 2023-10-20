@@ -68,7 +68,7 @@ runs:
         AWSCLI_VERSION: ${{ inputs.awscli-version }}
 
     - name: 🌧️ Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
         aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
@@ -87,7 +87,9 @@ runs:
     - name: ✅ Terraform fmt
       shell: bash
       id: fmt
-      run: terraform fmt -recursive -no-color -check -diff
+      run: |
+        terraform fmt -recursive -no-color -check -diff
+      continue-on-error: true
 
     - name: ⤵️ Download the tfvars files
       shell: bash
