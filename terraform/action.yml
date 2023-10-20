@@ -128,7 +128,7 @@ runs:
       shell: bash
       id: plan
       if: |
-        inputs.terraform-aciton == 'plan'
+        inputs.terraform-action == 'plan'
       run: |
         echo "######################################################################################"
         echo "############### Terraform validate: start"
