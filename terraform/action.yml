@@ -88,7 +88,11 @@ runs:
       shell: bash
       id: fmt
       run: |
+        echo "###########################################"
+        echo "############### Terraform fmt: start"
         terraform fmt -recursive -no-color -check -diff
+        echo "############### Terraform fmt: end"
+        echo "###########################################"
       continue-on-error: true
 
     - name: ⤵️ Download the tfvars files
@@ -100,7 +104,11 @@ runs:
       shell: bash
       id: init
       run: |
+        echo "###########################################"
+        echo "############### Terraform init: start"
         terraform init
+        echo "############### Terraform init: end"
+        echo "###########################################"
       env:
         SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       continue-on-error: true
@@ -109,7 +117,11 @@ runs:
       shell: bash
       id: validate
       run: |
+        echo "###########################################"
+        echo "############### Terraform validate: start"
         terraform validate -no-color
+        echo "############### Terraform validate: end"
+        echo "###########################################"
       continue-on-error: true
 
     - name: 📝 Terraform Plan
@@ -118,12 +130,16 @@ runs:
       if: |
         inputs.terraform-aciton == 'plan'
       run: |
+        echo "###########################################"
+        echo "############### Terraform validate: start"
         terraform plan -no-color 2>&1 | tee /tmp/plan.txt
         sed -i '/Refreshing state.../d' /tmp/plan.txt
+        echo "############### Terraform validate: end"
+        echo "###########################################"
       continue-on-error: true
 
     - name: 🔰 Pull request comments
-      if: github.event_name == 'pull_request' && inputs.github-action == 'plan'
+      if: github.event_name == 'pull_request'
       uses: actions/github-script@v4.0.2
       with:
         github-token: ${{ inputs.github_token }}
