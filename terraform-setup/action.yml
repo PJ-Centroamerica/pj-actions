@@ -1,0 +1,67 @@
+name: 'Terraform Setup'
+description: 'Terraform Setup'
+
+inputs:
+  aws-access-key-id:
+    description: 'AWS access ID'
+    required: true
+  aws-secret-access-key:
+    description: 'AWS access secret key'
+    required: true
+  aws-region:
+    description: 'AWS region'
+    required: true
+    default: us-east-1
+  terraform-version:
+    description: 'Terraform verision'
+    required: true
+  ssh-private-key:
+    description: 'SSH key used for GitHub modules'
+    required: true
+  awscli-version:
+    description: 'aws cli version'
+    required: true
+
+
+runs:
+    using: "composite"
+    steps:
+
+    - name: 📒 Checkout repo
+      uses: actions/checkout@v3
+
+    - name: 🧰 Setup terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ inputs.terraform-version }}
+
+    - name: 🧰 Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: 🧰 Install awscli
+      shell: bash
+      run: |
+        curl -sL https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI_VERSION}.zip -o awscliv2.zip
+        unzip awscliv2.zip
+        sudo ./aws/install
+      env:
+        AWSCLI_VERSION: ${{ inputs.awscli-version }}
+
+    - name: 🌧️ Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: ${{ inputs.aws-region }}
+
+    - name: 🧑‍🔧️ Setup SSH Keys and known_hosts (Using other module - github module)
+      shell: bash
+      env:
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+        ssh-add - <<< "${{ inputs.ssh-private-key }}"
