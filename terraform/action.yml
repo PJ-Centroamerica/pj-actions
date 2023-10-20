@@ -84,6 +84,11 @@ runs:
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-add - <<< "${{ inputs.ssh-private-key }}"
 
+    - name: ✅ Terraform fmt
+      shell: bash
+      id: fmt
+      run: terraform fmt -recursive -no-color -check -diff
+
     - name: ⤵️ Download the tfvars files
       shell: bash
       run: |
@@ -100,11 +105,6 @@ runs:
       shell: bash
       run: |
         terraform validate -no-color
-
-    - name: ✅ Terraform fmt
-      shell: bash
-      id: fmt
-      run: terraform fmt -recursive -no-color -check -diff
 
     - name: 📝 Terraform Plan
       shell: bash
