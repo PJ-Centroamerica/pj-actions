@@ -90,16 +90,19 @@ runs:
         echo ${{ inputs.tf-var-variables }} | base64 -d > terraform.tfvars
 
     - name: 🏭 Terraform Init
+      shell: bash
       run: |
         terraform init
       env:
         SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
     - name: ✅ Terraform Validate
+      shell: bash
       run: |
         terraform validate -no-color
 
     - name: ✅ Terraform fmt
+      shell: bash
       id: fmt
       run: terraform fmt -check
 
@@ -153,6 +156,7 @@ runs:
       run: exit 1
 
     - name: 💥 Terraform Apply
+      shell: bash
       id: apply
       if: |
         inputs.terraform-actino == 'apply'
@@ -160,8 +164,8 @@ runs:
         terraform apply -no-color -auto-approve
 
     - name:  🚀 Teams success ✅
-      if: success() && steps.apply.outcome == 'success'
       shell: bash
+      if: success() && steps.apply.outcome == 'success'
       run: |
         curl --silent \
         --output /dev/null \
@@ -193,8 +197,8 @@ runs:
       continue-on-error: true
   
     - name:  🚀 Teams Failure ❌
-      if: failure() && steps.apply.outcome == 'failure'
       shell: bash
+      if: failure() && steps.apply.outcome == 'failure'
       run: |
         curl --silent \
         --output /dev/null \
