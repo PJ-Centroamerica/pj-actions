@@ -128,7 +128,7 @@ runs:
       shell: bash
       id: plan
       if: |
-        inputs.terraform-action == 'plan' && (github.ref != 'refs/heads/master' && github.event_name != 'push')
+        inputs.terraform-action == 'plan' && github.ref != 'refs/heads/master' && github.event_name != 'push'
       run: |
         echo "######################################################################################"
         echo "############### Terraform plan: start"
