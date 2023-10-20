@@ -215,7 +215,7 @@ runs:
       shell: bash
       id: apply
       if: |
-        inputs.terraform-actino == 'apply'
+        inputs.terraform-action == 'apply'
       run: |
         terraform apply -no-color -auto-approve
 
