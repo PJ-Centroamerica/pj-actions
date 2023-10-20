@@ -199,7 +199,7 @@ runs:
 
     - name: ✅ Terraform Validate Status
       shell: bash
-      if: steps.validate.outcome
+      if: steps.validate.outcome == 'failure'
       run: |
         echo "Error: Terraform validate fail"
         exit 1
