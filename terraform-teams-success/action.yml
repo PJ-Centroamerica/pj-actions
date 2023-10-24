@@ -21,7 +21,6 @@ runs:
     steps:
 
     - name:  Teams message success
-      if: inputs.type-alert == 'success' 
       shell: bash
       run: |
         curl --silent \
