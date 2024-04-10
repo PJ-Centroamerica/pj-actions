@@ -101,7 +101,7 @@ runs:
       run: |
         eb --version
         eb init ${{ inputs.application_name || inputs.application }} --region ${{ inputs.aws-region }} --platform "${{ inputs.plataform }}"
-        eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process
+        eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process --message="test"
 
     - name: 🚀 Slack success ✅
       if: ${{ success() }}
