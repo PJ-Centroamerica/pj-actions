@@ -31,15 +31,15 @@ inputs:
   branch-release:
     description: 'Branch or release to deploy'
     required: true
-  slack-bot-token:
-    description: 'Slack token'
-    required: true
-  slack-channel:
-    description: 'Slack channel'
-    required: true
+  # slack-bot-token:
+  #   description: 'Slack token'
+  #   required: true
+  # slack-channel:
+  #   description: 'Slack channel'
+  #   required: true
   teams-webhook:
     description: 'Teams webhook'
-    requierd: false
+    required: false
 
 runs:
     using: "composite"
@@ -50,31 +50,31 @@ runs:
       if: startsWith(github.ref, 'refs/tags/v')
       run: echo "RELEASE=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
-    - name: 🚀 Slack status
-      if: ${{ always() }}
-      id: slack
-      uses: slackapi/slack-github-action@v1.23.0
-      with:
-        channel-id: ${{ inputs.slack-channel }}
-        payload: |
-          {
-             "attachments":[
-                {
-                   "mrkdwn_in": ["text"],
-                   "author_name":"Deployment ${{ inputs.application }}",
-                   "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-                   "color":"",
-                   "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
-                }
-             ]
-          }
-      continue-on-error: true
-      env:
-        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
-        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
+    # - name: 🚀 Slack status
+    #   if: ${{ always() }}
+    #   id: slack
+    #   uses: slackapi/slack-github-action@v1.23.0
+    #   with:
+    #     channel-id: ${{ inputs.slack-channel }}
+    #     payload: |
+    #       {
+    #          "attachments":[
+    #             {
+    #                "mrkdwn_in": ["text"],
+    #                "author_name":"Deployment ${{ inputs.application }}",
+    #                "author_link":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+    #                "color":"",
+    #                "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
+    #             }
+    #          ]
+    #       }
+    #   continue-on-error: true
+    #   env:
+    #     SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+    #     RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
     - name: 🌧️ Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v4.0.2
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
         aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
@@ -102,28 +102,28 @@ runs:
         eb --version
         eb init ${{ inputs.application_name || inputs.application }} --region ${{ inputs.aws-region }} --platform "${{ inputs.plataform }}"
         eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process
-    - name: 🚀 Slack success ✅
-      if: ${{ success() }}
-      uses: slackapi/slack-github-action@v1.23.0
-      with:
-        channel-id: ${{ inputs.slack-channel }}
-        payload: |
-          {
-             "attachments":[
-                {
-                   "mrkdwn_in": ["text"],
-                   "author_name":"Deployment ${{ inputs.application }}",
-                   "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
-                   "color":"#03fc28",
-                   "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
-                }
-             ]
-          }
-        update-ts: ${{ steps.slack.outputs.ts }}
-      continue-on-error: true
-      env:
-        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
-        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
+    # - name: 🚀 Slack success ✅
+    #   if: ${{ success() }}
+    #   uses: slackapi/slack-github-action@v1.23.0
+    #   with:
+    #     channel-id: ${{ inputs.slack-channel }}
+    #     payload: |
+    #       {
+    #          "attachments":[
+    #             {
+    #                "mrkdwn_in": ["text"],
+    #                "author_name":"Deployment ${{ inputs.application }}",
+    #                "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
+    #                "color":"#03fc28",
+    #                "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
+    #             }
+    #          ]
+    #       }
+    #     update-ts: ${{ steps.slack.outputs.ts }}
+    #   continue-on-error: true
+    #   env:
+    #     SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+    #     RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
     - name:  🚀 Teams success ✅
       if: ${{ success() }}
@@ -164,28 +164,28 @@ runs:
       env:
         RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
-    - name: 🚀 Slack failure ❌
-      if: ${{ failure() }}
-      uses: slackapi/slack-github-action@v1.23.0
-      with:
-        channel-id: ${{ inputs.slack-channel }}
-        payload: |
-          {
-             "attachments":[
-                {
-                   "mrkdwn_in": ["text"],
-                   "author_name":"Deployment ${{ inputs.application }}",
-                   "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
-                   "color":"#fc4503",
-                   "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
-                }
-             ]
-          }
-        update-ts: ${{ steps.slack.outputs.ts }}
-      continue-on-error: true
-      env:
-        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
-        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
+    # - name: 🚀 Slack failure ❌
+    #   if: ${{ failure() }}
+    #   uses: slackapi/slack-github-action@v1.23.0
+    #   with:
+    #     channel-id: ${{ inputs.slack-channel }}
+    #     payload: |
+    #       {
+    #          "attachments":[
+    #             {
+    #                "mrkdwn_in": ["text"],
+    #                "author_name":"Deployment ${{ inputs.application }}",
+    #                "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
+    #                "color":"#fc4503",
+    #                "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
+    #             }
+    #          ]
+    #       }
+    #     update-ts: ${{ steps.slack.outputs.ts }}
+    #   continue-on-error: true
+    #   env:
+    #     SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+    #     RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
     - name:  🚀 Teams failure ❌
       if: ${{ failure() }}
@@ -226,28 +226,28 @@ runs:
       env:
         RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
-    - name: 🚀 Slack cancelled ⚠️
-      if: ${{ cancelled() }}
-      uses: slackapi/slack-github-action@v1.23.0
-      with:
-        channel-id: ${{ inputs.slack-channel }}
-        payload: |
-          {
-             "attachments":[
-                {
-                   "mrkdwn_in": ["text"],
-                   "author_name":"Deployment ${{ inputs.application }}",
-                   "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
-                   "color":"#fce803",
-                   "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
-                }
-             ]
-          }
-        update-ts: ${{ steps.slack.outputs.ts }}
-      continue-on-error: true
-      env:
-        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
-        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
+    # - name: 🚀 Slack cancelled ⚠️
+    #   if: ${{ cancelled() }}
+    #   uses: slackapi/slack-github-action@v1.23.0
+    #   with:
+    #     channel-id: ${{ inputs.slack-channel }}
+    #     payload: |
+    #       {
+    #          "attachments":[
+    #             {
+    #                "mrkdwn_in": ["text"],
+    #                "author_name":"Deployment ${{ inputs.application }}",
+    #                "author_link":"${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }}",
+    #                "color":"#fce803",
+    #                "text":"${{ inputs.icon }} *Release* ${{ env.RELEASE }} _by @${{ github.actor }}_"
+    #             }
+    #          ]
+    #       }
+    #     update-ts: ${{ steps.slack.outputs.ts }}
+    #   continue-on-error: true
+    #   env:
+    #     SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+    #     RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
     - name:  🚀 Teams cancelled ⚠️
       if: ${{ cancelled() }}
