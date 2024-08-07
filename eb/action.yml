@@ -81,7 +81,7 @@ runs:
         aws-region: ${{ inputs.aws-region }}
 
     - name: ✨ Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: 🧰 Install eb-cli
       shell: bash
@@ -101,7 +101,7 @@ runs:
       run: |
         eb --version
         eb init ${{ inputs.application_name || inputs.application }} --region ${{ inputs.aws-region }} --platform "${{ inputs.plataform }}"
-        eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process
+        eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process --message="${{ github.run_number }}"
     # - name: 🚀 Slack success ✅
     #   if: ${{ success() }}
     #   uses: slackapi/slack-github-action@v1.23.0
