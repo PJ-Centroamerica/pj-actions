@@ -101,7 +101,7 @@ runs:
       run: |
         eb --version
         eb init ${{ inputs.application_name || inputs.application }} --region ${{ inputs.aws-region }} --platform "${{ inputs.plataform }}"
-        eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process --message="${{ github.run_number }}"
+        eb deploy ${{ inputs.application }}-${{ inputs.environment }} -v --process --message="${{ env.RELEASE || inputs.branch-release }}, pipeline: ${{ github.run_number }}"
     # - name: 🚀 Slack success ✅
     #   if: ${{ success() }}
     #   uses: slackapi/slack-github-action@v1.23.0
