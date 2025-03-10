@@ -86,8 +86,6 @@ runs:
     - name: 🧰 Install eb-cli
       shell: bash
       run: |
-    #   sudo pip config --global set global.index-url http://${PROXY_DOMAIN}:${PROXY_PORT}${PROXY_PATH}
-    #   sudo pip config --global set global.trusted-host ${PROXY_DOMAIN}
         python -m pip install --upgrade pip
         pip install urllib3==1.26.9
         pip install awsebcli --upgrade
