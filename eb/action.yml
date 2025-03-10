@@ -74,7 +74,7 @@ runs:
     #     RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
     - name: 🌧️ Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4.0.2
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
         aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
@@ -86,8 +86,8 @@ runs:
     - name: 🧰 Install eb-cli
       shell: bash
       run: |
-        sudo pip config --global set global.index-url http://${PROXY_DOMAIN}:${PROXY_PORT}${PROXY_PATH}
-        sudo pip config --global set global.trusted-host ${PROXY_DOMAIN}
+    #   sudo pip config --global set global.index-url http://${PROXY_DOMAIN}:${PROXY_PORT}${PROXY_PATH}
+    #   sudo pip config --global set global.trusted-host ${PROXY_DOMAIN}
         python -m pip install --upgrade pip
         pip install urllib3==1.26.9
         pip install awsebcli --upgrade
