@@ -123,44 +123,44 @@ runs:
     #     SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
     #     RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
-    - name:  🚀 Teams success ✅
-      if: ${{ success() }}
-      shell: bash
-      run: |
-        curl --silent \
-        --output /dev/null \
-        --header 'content-type: application/json' \
-        --url '${{ inputs.teams-webhook }}' \
-        --data-raw '{  
-        "@type": "MessageCard",  
-        "@context": "http://schema.org/extensions",  
-        "themeColor": "03fc28",
-        "summary": "Backend deployment (success) ✅",
-        "sections": [{  
-            "activityTitle": "Backend deployment (success) ✅", 
-            "facts": [ 
-            {  
-                "name": "Application",  
-                "value": "[${{ inputs.application }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }})"
-            },  
-            {  
-                "name": "Country",
-                "value": "${{ inputs.icon }}"
-            },
-            {
-                "name": "Release",
-                "value": "${{ env.RELEASE }}"
-            },
-            {  
-                "name": "Triggered By",  
-                "value": "@${{ github.actor }}"
-            }],  
-            "markdown": true  
-          }]  
-        }'
-      continue-on-error: true
-      env:
-        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
+    # - name:  🚀 Teams success ✅
+    #   if: ${{ success() }}
+    #   shell: bash
+    #   run: |
+    #     curl --silent \
+    #     --output /dev/null \
+    #     --header 'content-type: application/json' \
+    #     --url '${{ inputs.teams-webhook }}' \
+    #     --data-raw '{  
+    #     "@type": "MessageCard",  
+    #     "@context": "http://schema.org/extensions",  
+    #     "themeColor": "03fc28",
+    #     "summary": "Backend deployment (success) ✅",
+    #     "sections": [{  
+    #         "activityTitle": "Backend deployment (success) ✅", 
+    #         "facts": [ 
+    #         {  
+    #             "name": "Application",  
+    #             "value": "[${{ inputs.application }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }})"
+    #         },  
+    #         {  
+    #             "name": "Country",
+    #             "value": "${{ inputs.icon }}"
+    #         },
+    #         {
+    #             "name": "Release",
+    #             "value": "${{ env.RELEASE }}"
+    #         },
+    #         {  
+    #             "name": "Triggered By",  
+    #             "value": "@${{ github.actor }}"
+    #         }],  
+    #         "markdown": true  
+    #       }]  
+    #     }'
+    #   continue-on-error: true
+    #   env:
+    #     RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
     # - name: 🚀 Slack failure ❌
     #   if: ${{ failure() }}
@@ -185,44 +185,44 @@ runs:
     #     SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
     #     RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
-    - name:  🚀 Teams failure ❌
-      if: ${{ failure() }}
-      shell: bash
-      run: |
-        curl --silent \
-        --output /dev/null \
-        --header 'content-type: application/json' \
-        --url '${{ inputs.teams-webhook }}' \
-        --data-raw '{  
-        "@type": "MessageCard",  
-        "@context": "http://schema.org/extensions",  
-        "themeColor": "fc4503",
-        "summary": "Backend deployment (failure) ❌",
-        "sections": [{  
-            "activityTitle": "Backend deployment (failure) ❌", 
-            "facts": [ 
-            {  
-                "name": "Application",  
-                "value": "[${{ inputs.application }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }})"
-            },  
-            {  
-                "name": "Country",
-                "value": "${{ inputs.icon }}"
-            },
-            {
-                "name": "Release",
-                "value": "${{ env.RELEASE }}"
-            },
-            {  
-                "name": "Triggered By",  
-                "value": "@${{ github.actor }}"
-            }],  
-            "markdown": true  
-          }]  
-        }'
-      continue-on-error: true
-      env:
-        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
+    # - name:  🚀 Teams failure ❌
+    #   if: ${{ failure() }}
+    #   shell: bash
+    #   run: |
+    #     curl --silent \
+    #     --output /dev/null \
+    #     --header 'content-type: application/json' \
+    #     --url '${{ inputs.teams-webhook }}' \
+    #     --data-raw '{  
+    #     "@type": "MessageCard",  
+    #     "@context": "http://schema.org/extensions",  
+    #     "themeColor": "fc4503",
+    #     "summary": "Backend deployment (failure) ❌",
+    #     "sections": [{  
+    #         "activityTitle": "Backend deployment (failure) ❌", 
+    #         "facts": [ 
+    #         {  
+    #             "name": "Application",  
+    #             "value": "[${{ inputs.application }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }})"
+    #         },  
+    #         {  
+    #             "name": "Country",
+    #             "value": "${{ inputs.icon }}"
+    #         },
+    #         {
+    #             "name": "Release",
+    #             "value": "${{ env.RELEASE }}"
+    #         },
+    #         {  
+    #             "name": "Triggered By",  
+    #             "value": "@${{ github.actor }}"
+    #         }],  
+    #         "markdown": true  
+    #       }]  
+    #     }'
+    #   continue-on-error: true
+    #   env:
+    #     RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
     # - name: 🚀 Slack cancelled ⚠️
     #   if: ${{ cancelled() }}
@@ -247,41 +247,41 @@ runs:
     #     SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
     #     RELEASE: ${{ env.RELEASE || inputs.branch-release }}
 
-    - name:  🚀 Teams cancelled ⚠️
-      if: ${{ cancelled() }}
-      shell: bash
-      run: |
-        curl --silent \
-        --output /dev/null \
-        --header 'content-type: application/json' \
-        --url '${{ inputs.teams-webhook }}' \
-        --data-raw '{  
-        "@type": "MessageCard",  
-        "@context": "http://schema.org/extensions",  
-        "themeColor": "fce803",
-        "summary": "Backend deployment (cancelled) ⚠️",
-        "sections": [{  
-            "activityTitle": "Backend deployment (cancelled) ⚠️", 
-            "facts": [ 
-            {  
-                "name": "Application",  
-                "value": "[${{ inputs.application }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }})"
-            },  
-            {  
-                "name": "Country",
-                "value": "${{ inputs.icon }}"
-            },
-            {
-                "name": "Release",
-                "value": "${{ env.RELEASE }}"
-            },
-            {  
-                "name": "Triggered By",  
-                "value": "@${{ github.actor }}"
-            }],  
-            "markdown": true  
-          }]  
-        }'
-      continue-on-error: true
-      env:
-        RELEASE: ${{ env.RELEASE || inputs.branch-release }}
+    # - name:  🚀 Teams cancelled ⚠️
+    #   if: ${{ cancelled() }}
+    #   shell: bash
+    #   run: |
+    #     curl --silent \
+    #     --output /dev/null \
+    #     --header 'content-type: application/json' \
+    #     --url '${{ inputs.teams-webhook }}' \
+    #     --data-raw '{  
+    #     "@type": "MessageCard",  
+    #     "@context": "http://schema.org/extensions",  
+    #     "themeColor": "fce803",
+    #     "summary": "Backend deployment (cancelled) ⚠️",
+    #     "sections": [{  
+    #         "activityTitle": "Backend deployment (cancelled) ⚠️", 
+    #         "facts": [ 
+    #         {  
+    #             "name": "Application",  
+    #             "value": "[${{ inputs.application }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}/checks?check_suite_id=${{ github.run_id }})"
+    #         },  
+    #         {  
+    #             "name": "Country",
+    #             "value": "${{ inputs.icon }}"
+    #         },
+    #         {
+    #             "name": "Release",
+    #             "value": "${{ env.RELEASE }}"
+    #         },
+    #         {  
+    #             "name": "Triggered By",  
+    #             "value": "@${{ github.actor }}"
+    #         }],  
+    #         "markdown": true  
+    #       }]  
+    #     }'
+    #   continue-on-error: true
+    #   env:
+    #     RELEASE: ${{ env.RELEASE || inputs.branch-release }}
